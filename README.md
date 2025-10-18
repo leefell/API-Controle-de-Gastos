@@ -54,16 +54,28 @@ Uma API simples para gerenciar despesas pessoais, com cadastro de usuários, cat
 
 Você pode usar uma ferramenta como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/) para testar os endpoints da API.
 
-### Login e Gerar token
+### Autenticação
 
--  `POST auth/login`: Devolve o Bearer token caso a credencial seja válida
-      -   Corpo da requisição (JSON):
-        ```json
-        {
-          "email": "usuario@exemplo.com",
-          "senha": "senha123"
-        }
-        ```
+- **`POST /auth/login`**: Gera um token **Bearer** caso as credenciais sejam válidas.  
+  - **Corpo da requisição (JSON):**
+    ```json
+    {
+      "email": "usuario@exemplo.com",
+      "senha": "senha123"
+    }
+    ```
+  - **Resposta (200 - Sucesso):**
+    ```json
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+    ```
+  - **Resposta (401 - Credenciais inválidas):**
+    ```json
+    {
+      "erro": "Email ou senha inválidos"
+    }
+    ```
 
 ### Usuários
 
