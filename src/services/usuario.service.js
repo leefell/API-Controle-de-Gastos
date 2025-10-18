@@ -1,4 +1,5 @@
 const prisma = require("../prismaClient.js");
+const bcrypt = require("bcryptjs");
 
 const getAllUsuarios = () => {
   return prisma.usuario.findMany({
@@ -12,9 +13,13 @@ const getUsuarioById = (id) => {
   });
 };
 
-const createUsuario = (data) => {
+const createUsuario = async (data) => {
+  const hashSenha = await bcrypt.hash(data.senha, 10);
+
+  const dataComSenhaHash = { ...data, senha: hashSenha };
+
   return prisma.usuario.create({
-    data,
+    data: dataComSenhaHash,
   });
 };
 

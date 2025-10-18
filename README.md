@@ -35,6 +35,7 @@ Uma API simples para gerenciar despesas pessoais, com cadastro de usuários, cat
    Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo:
    ```env
    DATABASE_URL="postgresql://docker:docker@localhost:5432/gastosdb?schema=public"
+   JWT_SECRET="sua_chave_secreta_jwt"
    ```
 
 3. **Aplique as migrações do banco de dados:**
@@ -52,6 +53,17 @@ Uma API simples para gerenciar despesas pessoais, com cadastro de usuários, cat
 ## Testando as Rotas
 
 Você pode usar uma ferramenta como [Postman](https://www.postman.com/) ou [Insomnia](https://insomnia.rest/) para testar os endpoints da API.
+
+### Login e Gerar token
+
+-  `POST auth/login`: Devolve o Bearer token caso a credencial seja válida
+      -   Corpo da requisição (JSON):
+        ```json
+        {
+          "email": "usuario@exemplo.com",
+          "senha": "senha123"
+        }
+        ```
 
 ### Usuários
 
