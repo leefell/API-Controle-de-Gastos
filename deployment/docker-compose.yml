@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Serviço do Frontend
+  frontend:
+    build:
+      context: ..
+      dockerfile: deployment/frontend.Dockerfile
+    container_name: frontend_app
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+  # Serviço do Backend (API)
+  api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    container_name: backend_api
+    ports:
+      - "3000:3000"
+    command: sh -c "./wait-for-postgres.sh postgres 'npm run db:migrate && npm run start'"
+    env_file:
+      - ../api/.env
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  # Serviço do Banco de Dados
+  postgres:
+    image: postgres:14-alpine
+    container_name: db_gastos_prod
+    restart: always
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=gastosdb
+    volumes:
+      - pg_data_prod:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Serviço do Adminer (Gerenciador do DB)
+  adminer:
+    image: adminer
+    container_name: adminer_gastos_prod
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+volumes:
+  pg_data_prod:
+
+networks:
+  app-network:
+    driver: bridge

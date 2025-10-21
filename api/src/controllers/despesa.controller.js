@@ -24,7 +24,8 @@ const getDespesaById = async (req, res) => {
 
 const createDespesa = async (req, res) => {
   try {
-    const novaDespesa = await despesaService.createDespesa(req.body);
+    const despesaData = { ...req.body, usuarioId: req.usuario.id }; // atrelar despesa ao usuario
+    const novaDespesa = await despesaService.createDespesa(despesaData);
     res.status(201).json(novaDespesa);
   } catch (error) {
     res.status(500).json({ error: "Erro ao criar despesa." });
