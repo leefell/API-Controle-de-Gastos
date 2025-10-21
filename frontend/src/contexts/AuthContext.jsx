@@ -13,12 +13,10 @@ const AuthProvider = ({ children }) => {
       if (token) {
         api.defaults.headers.Authorization = `Bearer ${token}`;
         try {
-          // Here you should have an endpoint to get user data from the token
-          // For now, we'll just assume the token is valid if it exists
-          // You might want to decode the token or make a request to /api/me
-          setUser({ token });
+          const response = await api.get('/auth/me');
+          setUser(response.data);
         } catch (error) {
-          console.error("Failed to fetch user", error);
+          console.error("Token inválido ou expirado", error);
           localStorage.removeItem('token');
           setToken(null);
           setUser(null);
@@ -34,11 +32,12 @@ const AuthProvider = ({ children }) => {
       const response = await api.post('/auth/login', { email, senha });
       const { token } = response.data;
       localStorage.setItem('token', token);
-      setToken(token);
       api.defaults.headers.Authorization = `Bearer ${token}`;
-      setUser({ token });
+      const userResponse = await api.get('/auth/me');
+      setUser(userResponse.data);
+      setToken(token); // Trigger useEffect
     } catch (error) {
-      console.error("Login failed", error);
+      console.error("Falha no login", error);
       throw error;
     }
   };
