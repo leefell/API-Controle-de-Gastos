@@ -3,8 +3,8 @@ import { AuthContext } from '../contexts/AuthContext';
 import api from '../api/api';
 import { FaPlus, FaSignOutAlt, FaEdit, FaTrash } from 'react-icons/fa';
 
-// Modal de Edição
-const EditModal = ({ despesa, onClose, onSave }) => {
+// Modal de Edição de Despesa
+const EditDespesaModal = ({ despesa, onClose, onSave }) => {
   const [descricao, setDescricao] = useState(despesa.descricao);
   const [valor, setValor] = useState(String(despesa.valor));
   const [data, setData] = useState(new Date(despesa.data).toISOString().split('T')[0]);
@@ -65,13 +65,42 @@ const EditModal = ({ despesa, onClose, onSave }) => {
   );
 };
 
-// Modal de Exclusão
-const DeleteModal = ({ onConfirm, onCancel }) => {
+// Modal de Edição de Categoria
+const EditCategoryModal = ({ category, onClose, onSave }) => {
+  const [nome, setNome] = useState(category.nome);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave({ id: category.id, nome });
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>Editar Categoria</h3>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Nome da Categoria</label>
+            <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} required />
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+            <button type="submit" className="btn-primary">Salvar</button>
+            <button type="button" onClick={onClose}>Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+
+// Modal de Exclusão Genérico
+const DeleteModal = ({ itemType, onConfirm, onCancel }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <h3>Confirmar Exclusão</h3>
-        <p>Tem certeza que deseja excluir esta despesa?</p>
+        <p>Tem certeza que deseja excluir est{itemType === 'despesa' ? 'a' : 'a'} {itemType === 'despesa' ? 'despesa' : 'categoria'}?</p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
           <button onClick={onCancel}>Cancelar</button>
           <button onClick={onConfirm} className="btn-danger">Confirmar</button>
@@ -92,8 +121,11 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  
   const [editingDespesa, setEditingDespesa] = useState(null);
-  const [deletingDespesaId, setDeletingDespesaId] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [deletingItem, setDeletingItem] = useState(null); // { type: 'despesa' | 'categoria', id: number }
+
 
   useEffect(() => {
     fetchDespesas();
@@ -151,21 +183,29 @@ const Dashboard = () => {
     }
   };
 
-  const handleDeleteDespesa = async () => {
+  const handleDelete = async () => {
+    if (!deletingItem) return;
+    const { type, id } = deletingItem;
+    setError('');
     try {
-      await api.delete(`/despesas/${deletingDespesaId}`);
-      setDeletingDespesaId(null);
-      fetchDespesas();
+      await api.delete(`/${type}s/${id}`);
+      setDeletingItem(null);
+      if (type === 'despesa') {
+        fetchDespesas();
+      } else {
+        fetchCategorias();
+        fetchDespesas();
+      }
     } catch (err) {
-      setError('Falha ao excluir despesa.');
+      setError(`Falha ao excluir ${type}.`);
     }
   };
 
   const handleUpdateDespesa = async (despesaToUpdate) => {
     setError('');
     try {
-      const { id, descricao, valor, data, categoriaId } = despesaToUpdate;
-      await api.put(`/despesas/${id}`, { descricao, valor, data, categoriaId });
+      const { id, ...data } = despesaToUpdate;
+      await api.put(`/despesas/${id}`, data);
       setEditingDespesa(null);
       fetchDespesas();
     } catch (err) {
@@ -173,19 +213,41 @@ const Dashboard = () => {
     }
   };
 
+  const handleUpdateCategory = async (categoryToUpdate) => {
+    setError('');
+    try {
+      const { id, nome } = categoryToUpdate;
+      await api.put(`/categorias/${id}`, { nome });
+      setEditingCategory(null);
+      fetchCategorias();
+      fetchDespesas();
+    } catch (err) {
+      setError('Falha ao atualizar categoria.');
+    }
+  };
+
+
   return (
     <>
       {editingDespesa && 
-        <EditModal 
+        <EditDespesaModal 
           despesa={editingDespesa} 
           onClose={() => setEditingDespesa(null)} 
           onSave={handleUpdateDespesa} 
         />
       }
-      {deletingDespesaId &&
+      {editingCategory && 
+        <EditCategoryModal 
+          category={editingCategory} 
+          onClose={() => setEditingCategory(null)} 
+          onSave={handleUpdateCategory} 
+        />
+      }
+      {deletingItem &&
         <DeleteModal 
-          onConfirm={handleDeleteDespesa}
-          onCancel={() => setDeletingDespesaId(null)}
+          itemType={deletingItem.type}
+          onConfirm={handleDelete}
+          onCancel={() => setDeletingItem(null)}
         />
       }
 
@@ -221,6 +283,29 @@ const Dashboard = () => {
               </form>
             </div>
           )}
+
+          <div className="table-section">
+            <h3>Categorias</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th style={{ textAlign: 'right' }}>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categorias.map(cat => (
+                  <tr key={cat.id}>
+                    <td>{cat.nome}</td>
+                    <td className="actions">
+                      <button className="btn-icon" onClick={() => setEditingCategory(cat)}><FaEdit /></button>
+                      <button className="btn-icon" onClick={() => setDeletingItem({ type: 'categoria', id: cat.id })}><FaTrash /></button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="form-section">
             <h3>Adicionar Nova Despesa</h3>
@@ -271,7 +356,7 @@ const Dashboard = () => {
                     <td>{despesa.categoria.nome}</td>
                     <td className="actions">
                       <button className="btn-icon" onClick={() => setEditingDespesa(despesa)}><FaEdit /></button>
-                      <button className="btn-icon" onClick={() => setDeletingDespesaId(despesa.id)}><FaTrash /></button>
+                      <button className="btn-icon" onClick={() => setDeletingItem({ type: 'despesa', id: despesa.id })}><FaTrash /></button>
                     </td>
                   </tr>
                 ))}
