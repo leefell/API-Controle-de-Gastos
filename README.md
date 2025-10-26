@@ -85,7 +85,7 @@ Antes de iniciar, você precisa criar um arquivo para as variáveis de ambiente 
 2.  Execute o seguinte comando para construir as imagens e iniciar todos os containers:
 
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
 
     Na primeira vez, o Docker fará o download das imagens base e construirá os containers do frontend e do backend. Nas próximas vezes, o processo será muito mais rápido.
@@ -100,10 +100,10 @@ Após a conclusão do comando, os serviços estarão disponíveis nos seguintes 
 
 ### Passo 4: Parar a Aplicação
 
-Para parar todos os serviços, volte ao terminal onde o `docker-compose` está rodando e pressione `Ctrl + C`. Ou, de qualquer terminal na pasta `deployment`, execute:
+Para parar todos os serviços, volte ao terminal onde o `docker compose` está rodando e pressione `Ctrl + C`. Ou, de qualquer terminal na pasta `deployment`, execute:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ---
