@@ -20,7 +20,7 @@ services:
     container_name: backend_api
     ports:
       - "3000:3000"
-    command: sh -c "./wait-for-postgres.sh postgres 'npm run db:migrate && npm run start'"
+    command: sh -c 'npm run db:migrate && npm run start'
     env_file:
       - ../api/.env
     depends_on:

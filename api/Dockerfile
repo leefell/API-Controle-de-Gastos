@@ -33,10 +33,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/wait-for-postgres.sh .
-
-# Torna o script de espera executável
-RUN chmod +x wait-for-postgres.sh
 
 # Expõe a porta da API
 EXPOSE 3000
