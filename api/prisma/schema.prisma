@@ -21,6 +21,7 @@ model Usuario {
   nome         String?
   senha        String
   despesas     Despesa[]
+  categorias   Categoria[]
   removido     Boolean   @default(false)
   criadoEm     DateTime  @default(now())
   atualizadoEm DateTime  @updatedAt
@@ -30,6 +31,8 @@ model Categoria {
   id           Int       @id @default(autoincrement())
   nome         String    @unique
   despesas     Despesa[]
+  usuario      Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId    Int
   removido     Boolean   @default(false)
   criadoEm     DateTime  @default(now())
   atualizadoEm DateTime  @updatedAt
