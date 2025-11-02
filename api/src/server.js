@@ -25,6 +25,11 @@ app.use('/usuarios', usuarioRoutes);
 app.use('/categorias', categoriaRoutes);
 app.use('/despesas', despesaRoutes);
 
+// Middleware de tratamento de erros global
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Ocorreu um erro no servidor!');
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);

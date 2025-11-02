@@ -1,5 +1,5 @@
 # Estágio 1: Instalar dependências
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Estágio 2: Construir a aplicação
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ COPY . .
 RUN npm run prisma:generate
 
 # Estágio 3: Imagem final de produção
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 

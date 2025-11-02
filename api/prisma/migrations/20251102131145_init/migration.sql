@@ -15,6 +15,7 @@ CREATE TABLE "Usuario" (
 CREATE TABLE "Categoria" (
     "id" SERIAL NOT NULL,
     "nome" TEXT NOT NULL,
+    "usuarioId" INTEGER NOT NULL,
     "removido" BOOLEAN NOT NULL DEFAULT false,
     "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "atualizadoEm" TIMESTAMP(3) NOT NULL,
@@ -40,8 +41,8 @@ CREATE TABLE "Despesa" (
 -- CreateIndex
 CREATE UNIQUE INDEX "Usuario_email_key" ON "Usuario"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Categoria_nome_key" ON "Categoria"("nome");
+-- AddForeignKey
+ALTER TABLE "Categoria" ADD CONSTRAINT "Categoria_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Despesa" ADD CONSTRAINT "Despesa_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

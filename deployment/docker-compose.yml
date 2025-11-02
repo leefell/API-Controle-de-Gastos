@@ -1,12 +1,17 @@
 services:
-  # Serviço do Frontend
+  # Serviço do Frontend (modo desenvolvimento)
   frontend:
     build:
       context: ..
       dockerfile: deployment/frontend.Dockerfile
+      target: build # Usa o estágio de build (node) em vez do final (httpd)
     container_name: frontend_app
     ports:
-      - "80:80"
+      - "80:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
     depends_on:
       - api
     networks:
@@ -20,7 +25,9 @@ services:
     container_name: backend_api
     ports:
       - "3000:3000"
-    command: sh -c 'npm run db:migrate && npm run start'
+    volumes:
+      - ../api:/app
+      - /app/node_modules
     env_file:
       - ../api/.env
     depends_on:

@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 
@@ -29,7 +30,7 @@ model Usuario {
 
 model Categoria {
   id           Int       @id @default(autoincrement())
-  nome         String    @unique
+  nome         String    
   despesas     Despesa[]
   usuario      Usuario   @relation(fields: [usuarioId], references: [id])
   usuarioId    Int
