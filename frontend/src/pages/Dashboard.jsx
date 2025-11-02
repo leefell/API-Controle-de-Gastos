@@ -111,7 +111,7 @@ const DeleteModal = ({ itemType, onConfirm, onCancel }) => {
 };
 
 const Dashboard = () => {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [despesas, setDespesas] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [descricao, setDescricao] = useState('');
@@ -125,7 +125,6 @@ const Dashboard = () => {
   const [editingDespesa, setEditingDespesa] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [deletingItem, setDeletingItem] = useState(null); // { type: 'despesa' | 'categoria', id: number }
-
 
   useEffect(() => {
     fetchDespesas();
@@ -253,7 +252,7 @@ const Dashboard = () => {
 
       <div className="dashboard-container">
         <nav className="navbar">
-          <h2>Painel</h2>
+          <h2>Bem-vindo, {user.nome}!</h2>
           <div className="navbar-actions">
             <button onClick={() => setShowAddCategory(!showAddCategory)} className="btn-primary">
               <FaPlus style={{ marginRight: '8px' }} />
