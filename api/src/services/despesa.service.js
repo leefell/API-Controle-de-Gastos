@@ -1,8 +1,8 @@
 const prisma = require('../prismaClient.js');
 
-const getAllDespesas = () => {
+const getAllDespesas = (usuarioId) => {
   return prisma.despesa.findMany({
-    where: { removido: false },
+    where: { removido: false, usuarioId },
     include: {
       usuario: { select: { nome: true } },
       categoria: { select: { nome: true } },

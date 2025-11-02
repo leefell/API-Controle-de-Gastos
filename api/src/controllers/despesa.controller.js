@@ -2,7 +2,7 @@ const despesaService = require("../services/despesa.service.js");
 
 const getAllDespesas = async (req, res) => {
   try {
-    const despesas = await despesaService.getAllDespesas();
+    const despesas = await despesaService.getAllDespesas(req.usuario.id);
     res.status(200).json(despesas);
   } catch (error) {
     res.status(500).json({ error: "Erro ao buscar despesas." });
